@@ -15,4 +15,7 @@ public interface UserRepository {
 	void addUser(UserEntity userEntity);
 	boolean idDuplication(String id);
 	UserEntity findById(String id);
+	void updateByNickname(String id, String nickname);
+	void deleteById(String id);
+	void deleteByEntity(UserEntity userEntity);
 }

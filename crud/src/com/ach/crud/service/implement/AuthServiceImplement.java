@@ -1,5 +1,6 @@
 package com.ach.crud.service.implement;
 
+import com.ach.crud.CrudApplication;
 import com.ach.crud.dto.auth.SignInRequestDto;
 import com.ach.crud.dto.auth.SignUpRequestDto;
 import com.ach.crud.entity.UserEntity;
@@ -37,7 +38,7 @@ public class AuthServiceImplement implements AuthService {
 
 	@Override
 	public void signIn(SignInRequestDto requestDto) {
-		// 아이디에 해당핳는 정보가 있는지 확인 (인스턴스를 찾는다)
+		// 아이디에 해당하는 정보가 있는지 확인 (인스턴스를 찾는다)
 		String id = requestDto.getId();
 		UserEntity userEntity = userRepository.findById(id);
 		// -존재하지 않는다면 "로그인 실패" 출력 후 메소드 종료
@@ -53,9 +54,10 @@ public class AuthServiceImplement implements AuthService {
 			return;
 		}
 		// -같지 않다면 "로그인 실패" 출력 후 메소드 종료
-		System.out.println("Login success.");
+		// 로그인 정보 저장
+		CrudApplication.SESSION = id;
 		// '로그인 성공' 출력
-		
+		System.out.println("Login success.");
 	}
 
 }

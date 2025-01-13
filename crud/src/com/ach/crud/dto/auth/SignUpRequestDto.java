@@ -64,7 +64,7 @@ public class SignUpRequestDto {
 			return false;
 		}
 		if(!this.nicknameValidate()) {
-			System.out.println("NICKNAME cannot be empty or consist only of spaces");
+			System.out.println("NICKNAME cannot be empty or consist only of spaces.");
 			return false;
 		}
 		return true;
