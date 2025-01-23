@@ -2,7 +2,8 @@ package com.ach.crud.controller.implement;
 
 import com.ach.crud.controller.BoardController;
 import com.ach.crud.dto.auth.NewPostRequestDto;
-import com.ach.crud.dto.auth.PostViewRequestDto;
+import com.ach.crud.dto.auth.PostSelectRequestDto;
+import com.ach.crud.dto.auth.PostUpdateRequestDto;
 import com.ach.crud.service.BoardService;
 
 public class BoardControllerImplement implements BoardController {
@@ -31,7 +32,7 @@ public class BoardControllerImplement implements BoardController {
 	}
 
 	@Override
-	public void viewPost(PostViewRequestDto requestDto) {
+	public void viewPost(PostSelectRequestDto requestDto) {
 		if(requestDto == null) {	// requestDto가 null일 경우 NullException 예외 발생
 			System.out.println("requestDto is null!!!");
 			return;	// void 함수를 강제로 종료시키는 방법
@@ -41,15 +42,33 @@ public class BoardControllerImplement implements BoardController {
 	}
 
 	@Override
-	public void updatePostById(String id) {
-		// TODO Auto-generated method stub
-
+	public void updatePostById(PostUpdateRequestDto requestDto) {
+		if(requestDto == null) {	// requestDto가 null일 경우 NullException 예외 발생
+			System.out.println("requestDto is null!!!");
+			return;	// void 함수를 강제로 종료시키는 방법
+		}
+		if(!requestDto.validate()) return;
+		this.boardService.updatePostById(requestDto);
 	}
 
 	@Override
-	public void deletePostById(String id) {
-		// TODO Auto-generated method stub
+	public void deletePostById(PostSelectRequestDto requestDto, String id) {
+		if(requestDto == null) {	// requestDto가 null일 경우 NullException 예외 발생
+			System.out.println("requestDto is null!!!");
+			return;	// void 함수를 강제로 종료시키는 방법
+		}
+		if(!requestDto.validate()) return;
+		this.boardService.deletePostById(requestDto, id);
+	}
 
+	@Override
+	public boolean postAndPermissionExisitence(PostSelectRequestDto requestDto, String id) {
+		if(requestDto == null) {	// requestDto가 null일 경우 NullException 예외 발생
+			System.out.println("requestDto is null!!!");
+			return false;	// void 함수를 강제로 종료시키는 방법
+		}
+		if(!requestDto.validate()) return false;
+		return this.boardService.postAndPermissionExisitence(requestDto, id);
 	}
 
 }

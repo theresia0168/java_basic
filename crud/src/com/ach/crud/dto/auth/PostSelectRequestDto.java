@@ -2,11 +2,12 @@ package com.ach.crud.dto.auth;
 
 import java.util.Scanner;
 
-public class PostViewRequestDto {
+public class PostSelectRequestDto {
 	private int postNum;
 	
-	public PostViewRequestDto() {
+	public PostSelectRequestDto() {
 		Scanner scanner = new Scanner(System.in);
+		System.out.print("Post Number: ");
 		this.postNum = scanner.nextInt();
 	}
 

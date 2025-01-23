@@ -11,7 +11,8 @@ import com.ach.crud.controller.implement.BoardControllerImplement;
 import com.ach.crud.controller.implement.UserControllerImplement;
 import com.ach.crud.db.MySQLConnector;
 import com.ach.crud.dto.auth.NewPostRequestDto;
-import com.ach.crud.dto.auth.PostViewRequestDto;
+import com.ach.crud.dto.auth.PostSelectRequestDto;
+import com.ach.crud.dto.auth.PostUpdateRequestDto;
 import com.ach.crud.dto.auth.SignInRequestDto;
 import com.ach.crud.dto.auth.SignUpRequestDto;
 import com.ach.crud.dto.auth.UserInfoDeleteRequestDto;
@@ -99,16 +100,23 @@ public class CrudApplication {
 				}
 				
 				if(request.equals("view post")) {
-					PostViewRequestDto requestDto = new PostViewRequestDto();
+					PostSelectRequestDto requestDto = new PostSelectRequestDto();
+					// 입력 받을 때 숫자 형태로 받은 것이 맞는지 판단해줘야 함
 					boardController.viewPost(requestDto);
 				}
 				
 				if(request.equals("update post")) {
-					
+					PostSelectRequestDto requestDto1 = new PostSelectRequestDto();
+					if(!boardController.postAndPermissionExisitence(requestDto1, SESSION)) {
+						continue;
+					}
+					PostUpdateRequestDto requestDto2 = new PostUpdateRequestDto(requestDto1.getPostNum());
+					boardController.updatePostById(requestDto2);
 				}
 				
 				if(request.equals("delete post")) {
-					
+					PostSelectRequestDto requestDto = new PostSelectRequestDto();
+					boardController.deletePostById(requestDto, SESSION);
 				}
 			}
 		}

@@ -5,7 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import com.ach.crud.dto.auth.NewPostRequestDto;
-import com.ach.crud.dto.auth.PostViewRequestDto;
+import com.ach.crud.dto.auth.PostSelectRequestDto;
+import com.ach.crud.dto.auth.PostUpdateRequestDto;
 import com.ach.crud.repository.BoardRepository;
 
 public class BoardRepositoryImplement implements BoardRepository {
@@ -16,13 +17,13 @@ public class BoardRepositoryImplement implements BoardRepository {
 		this.connection = connection;
 	}
 	
-	@Override
+	@Override	// 게시물 작성
 	public void newPost(NewPostRequestDto requestDto, String id) {
 		final String SQL = "INSERT INTO board VALUES (NULL, ?, ?, ?, ?)";
-
+		// INSERT 문으로 새 게시물 작성 및 삽입
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-			
+			// 제목, 내용, 작성자 id, 작성일자 저장
 			preparedStatement.setString(1, requestDto.getTitle());
 			preparedStatement.setString(2, requestDto.getContents());
 			preparedStatement.setString(3, id);
@@ -33,13 +34,13 @@ public class BoardRepositoryImplement implements BoardRepository {
 		}
 	}
 
-	@Override
+	@Override	// 게시물 리스트 출력
 	public void viewPostList() {
 		final String SQL = "SELECT B.postNum, B.title, U.nickname, B.postedDate "
-				+ "FROM board B JOIN user U "
+				+ "FROM board B INNER JOIN user U "
 				+ "ON B.postedUserId = U.id "
 				+ "ORDER BY B.postNum DESC";
-		
+			// 모든 게시물의 게시물 번호, 제목, 작성자 닉네임, 작성일자를 출력
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(SQL);
 			ResultSet resultSet = preparedStatement.executeQuery();
@@ -58,9 +59,9 @@ public class BoardRepositoryImplement implements BoardRepository {
 	}
 
 	@Override
-	public void viewPost(PostViewRequestDto requestDto) {
+	public void viewPost(PostSelectRequestDto requestDto) {
 		final String SQL = "SELECT B.title, U.nickname, B.postedDate, B.contents "
-				+ "FROM board B JOIN user U "
+				+ "FROM board B INNER JOIN user U "
 				+ "ON B.postedUserId = U.id "
 				+ "WHERE B.postNum = ?";
 		try {
@@ -85,7 +86,7 @@ public class BoardRepositoryImplement implements BoardRepository {
 				System.out.println("Contents:\n" + contents);
 			}
 			else {
-				System.out.println("Post does not exist");
+				System.out.println("Post does not exist.");
 			}
 			
 		} catch (Exception exception) {
@@ -95,15 +96,52 @@ public class BoardRepositoryImplement implements BoardRepository {
 	}
 
 	@Override
-	public void updatePostById(String id) {
-		// TODO Auto-generated method stub
+	public void updatePostById(PostUpdateRequestDto requestDto) {
+		final String SQL = "UPDATE board SET title = ?, contents = ? WHERE postNum = ?";
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+			preparedStatement.setString(1, requestDto.getTitle());
+			preparedStatement.setString(2, requestDto.getContents());
+			preparedStatement.setInt(3, requestDto.getPostNum());
+			preparedStatement.executeUpdate();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 
 	}
 
 	@Override
-	public void deletePostById(String id) {
-		// TODO Auto-generated method stub
+	public void deletePostById(PostSelectRequestDto requestDto) {
+		final String SQL = "DELETE FROM board WHERE postNum = ?";
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+			preparedStatement.setInt(1, requestDto.getPostNum());
+			preparedStatement.executeUpdate();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 
+	}
+
+	@Override
+	public boolean postAndPermissionExisitence(PostSelectRequestDto requestDto, String id) {
+		final String SQL = "SELECT postNum, postedUserId FROM board WHERE postNum = ?";
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+			preparedStatement.setInt(1, requestDto.getPostNum());
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if(!resultSet.next()) {
+				System.out.println("Post does not exist.");
+				return false;
+			}
+			else if(!resultSet.getString("postedUserID").equals(id)) {
+				System.out.println("You don't have a permission!");
+				return false;
+			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		return true;
 	}
 
 }
